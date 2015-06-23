@@ -1,4 +1,5 @@
 # Ember Keyboard Service
+[![npm version](https://badge.fury.io/js/ember-keyboard-service.svg)](http://badge.fury.io/js/ember-keyboard-service) [![Build Status](https://travis-ci.org/Fabriquartz/ember-keyboard-service.svg?branch=master)](https://travis-ci.org/Fabriquartz/ember-keyboard-service.svg?branch=master) [![Ember Observer Score](http://emberobserver.com/badges/ember-keyboard-service.svg)](http://emberobserver.com/addons/ember-keyboard-service)
 
 ## Installation
 
