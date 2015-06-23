@@ -25,6 +25,16 @@ test('I can declare keyboard handlers', function(assert) {
   $(document.body).trigger($.Event('keydown', { key: 'x' }));
 });
 
+test('I can declare no keyboard handlers', function(assert) {
+  assert.expect(0);
+
+  var KeyboardObject = Ember.Object.extend(KeyboardMixin, {
+    keyboard: KeyboardService.create(),
+  });
+
+  var subject = KeyboardObject.create();
+});
+
 
 test('It fires on multiple instances', function(assert) {
   assert.expect(2);
