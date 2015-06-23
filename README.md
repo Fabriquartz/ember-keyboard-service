@@ -38,5 +38,5 @@ this.get('keyboard').listenFor(kombo, this, eventHandler);
 
 ## Todo
 
- -[ ] Add a mixin that adds a DSL for declaring keyboard handling.
- -[ ] Improve key combo handling.
+- [ ] Add a mixin that adds a DSL for declaring keyboard handling.
+- [ ] Improve key combo handling.
