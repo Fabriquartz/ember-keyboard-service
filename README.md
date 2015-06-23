@@ -6,7 +6,7 @@
 ember install ember-keyboard-service
 ```
 
-## Usage
+## Service Usage
 
 Use `Ember.inject.service` to inject the service onto your Ember object.
 
@@ -36,7 +36,32 @@ const kombo = 'ArrowUp,ArrowUp,ArrowDown,ArrowDown,ArrowLeft,ArrowRight,ArrowLef
 this.get('keyboard').listenFor(kombo, this, eventHandler);
 ```
 
+## Mixin Usage
+
+Mixin the mixin and declare some keyboardHandlers
+
+```js
+Ember.Object.extend(KeyboardMixin, {
+  keyboardHandlers: [
+    { key: 'ctrl+x', handler: 'cut' }
+    { key: 'ctrl+c', handler: 'copy' }
+    { key: 'ctrl+v', handler: 'paste' }
+  ],
+
+  cut() {
+    console.log('every day i'm cuttin');
+  },
+
+  copy() {
+    console.log('every day i'm copyin');
+  },
+
+  paste() {
+    console.log('every day i'm pastin');
+  }
+});
+```
+
 ## Todo
 
-- [ ] Add a mixin that adds a DSL for declaring keyboard handling.
 - [ ] Improve key combo handling.

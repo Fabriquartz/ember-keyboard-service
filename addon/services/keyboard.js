@@ -3,7 +3,7 @@ import $ from 'jquery';
 
 import KEYCODE_TO_KEY_MAP from '../fixtures/keycode-to-key-map';
 
-const { isArray } = Ember;
+const { computed, isArray } = Ember;
 
 function parseKeyShortHand(key, options) {
   // Parses sequences
@@ -31,7 +31,7 @@ function parseKeyShortHand(key, options) {
 }
 
 export default Ember.Service.extend({
-  _listeners: {},
+  _listeners: computed(function () { return {}; }),
 
   listenFor: function(key, context, listener, options) {
     if (options === null || options === undefined) { options = {}; }
