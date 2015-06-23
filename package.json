@@ -1,6 +1,6 @@
 {
   "name": "ember-keyboard-service",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A keyboard handling service for Ember apps",
   "directories": {
     "doc": "doc",
@@ -11,11 +11,11 @@
     "build": "ember build",
     "test": "ember try:testall"
   },
-  "repository": "",
+  "repository": "https://github.com/Fabriquartz/ember-keyboard-service",
   "engines": {
     "node": ">= 0.10.0"
   },
-  "author": "",
+  "author": "Marten Schilstra",
   "license": "MIT",
   "devDependencies": {
     "broccoli-asset-rev": "^2.0.2",
@@ -34,7 +34,8 @@
     "ember-try": "0.0.6"
   },
   "keywords": [
-    "ember-addon"
+    "ember-addon",
+    "keyboard"
   ],
   "dependencies": {
     "ember-cli-babel": "^5.0.0"
