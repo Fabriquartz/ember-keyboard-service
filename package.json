@@ -1,7 +1,7 @@
 {
   "name": "ember-keyboard-service",
-  "version": "0.0.0",
-  "description": "The default blueprint for ember-cli addons.",
+  "version": "0.0.1",
+  "description": "A keyboard handling service for Ember apps",
   "directories": {
     "doc": "doc",
     "test": "tests"
