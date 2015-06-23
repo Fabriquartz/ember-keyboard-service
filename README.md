@@ -49,15 +49,15 @@ Ember.Object.extend(KeyboardMixin, {
   ],
 
   cut() {
-    console.log('every day i'm cuttin');
+    console.log("every day i'm cuttin");
   },
 
   copy() {
-    console.log('every day i'm copyin');
+    console.log("every day i'm copyin");
   },
 
   paste() {
-    console.log('every day i'm pastin');
+    console.log("every day i'm pastin");
   }
 });
 ```
