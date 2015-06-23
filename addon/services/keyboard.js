@@ -30,6 +30,10 @@ function parseKeyShortHand(key, options) {
   return key;
 }
 
+function elementIsInputLike(element) {
+  return element.tagName === 'INPUT' || element.tagName === 'TEXTAREA';
+}
+
 export default Ember.Service.extend({
   _listeners: computed(function () { return {}; }),
 
@@ -80,9 +84,13 @@ export default Ember.Service.extend({
     const key = e.key || KEYCODE_TO_KEY_MAP[e.keyCode];
     let listeners = this.get(`_listeners.${key}`);
 
+
     if (isArray(listeners)) {
       listeners.forEach((listener) => {
         const [context, callback, options] = listener;
+
+        // Ignore input on input-like elements by default
+        if (elementIsInputLike(e.target) && !options.actOnInputElement) { return; }
 
         // Check for modifier key requirements
         if (e.ctrlKey  && !(options.requireCtrl || options.requireCtrlOrMeta)) { return; }
@@ -102,6 +110,7 @@ export default Ember.Service.extend({
           // Calls the actual callback function supplied to listenFor
           let fn = callback;
 
+          // if callback is string, lookup function with that name on context
           if (typeof callback === 'string') {
             fn = get(context, callback);
           }

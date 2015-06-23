@@ -170,6 +170,34 @@ test('it can handle the space key', function(assert) {
   $(document.body).trigger($.Event('keydown', { key: ' ' }));
 });
 
+test('if event.target is an input ignore by default', function(assert) {
+  assert.expect(0);
+  const service = this.subject();
+
+  service.listenFor('x', this, function() { assert.ok(true); });
+
+  const input    = document.createElement('input');
+  const textarea = document.createElement('textarea');
+
+  $(document.body).trigger($.Event('keydown', { key: 'x', target: input }));
+  $(document.body).trigger($.Event('keydown', { key: 'x', target: textarea }));
+});
+
+test('if event.target is an input handle if option is set', function(assert) {
+  assert.expect(2);
+  const service = this.subject();
+
+  service.listenFor('x', this, function() { assert.ok(true); }, {
+    actOnInputElement: true
+  });
+
+  const input    = document.createElement('input');
+  const textarea = document.createElement('textarea');
+
+  $(document.body).trigger($.Event('keydown', { key: 'x', target: input }));
+  $(document.body).trigger($.Event('keydown', { key: 'x', target: textarea }));
+});
+
 test('it can handle keyboard sequences', function(assert) {
   const service = this.subject();
   let run = false;
