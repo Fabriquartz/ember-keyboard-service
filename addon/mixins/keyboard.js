@@ -17,10 +17,17 @@ export default Ember.Mixin.create({
     if (!isArray(handlerDefinitions)) { return; }
 
     this.get('keyboardHandlers').forEach((handlerDef) => {
-      const handler = this.get(handlerDef.handler);
+      let handler = this.get(handlerDef.handler);
 
       assert('The function ' + handlerDef.handler + ' must exist',
              typeof handler === 'function');
+
+      if (isArray(handlerDef.arguments)) {
+        const originalHandler = handler;
+        handler = function() {
+          originalHandler.apply(this, handlerDef.arguments);
+        };
+      }
 
       keyboard.listenFor(handlerDef.key, this, handler, handlerDef.options);
     });

@@ -35,6 +35,22 @@ test('I can declare no keyboard handlers', function(assert) {
   var subject = KeyboardObject.create();
 });
 
+test('I can declare keyboard handlers with static arguments', function(assert) {
+  assert.expect(1);
+
+  var KeyboardObject = Ember.Object.extend(KeyboardMixin, {
+    keyboard: KeyboardService.create(),
+
+    handler(arg) { assert.equal(arg, 'foo'); },
+    keyboardHandlers: [
+      { key: 'x', handler: 'handler', arguments: ['foo'] }
+    ]
+  });
+
+  var subject = KeyboardObject.create();
+
+  $(document.body).trigger($.Event('keydown', { key: 'x' }));
+});
 
 test('It fires on multiple instances', function(assert) {
   assert.expect(2);
