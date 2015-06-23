@@ -1,6 +1,6 @@
 import Ember from 'ember';
 
-const { assert, isArray } = Ember;
+const { isArray } = Ember;
 const service = Ember.inject.service;
 
 export default Ember.Mixin.create({
@@ -17,19 +17,13 @@ export default Ember.Mixin.create({
     if (!isArray(handlerDefinitions)) { return; }
 
     this.get('keyboardHandlers').forEach((handlerDef) => {
-      let handler = this.get(handlerDef.handler);
-
-      assert('The function ' + handlerDef.handler + ' must exist',
-             typeof handler === 'function');
-
       if (isArray(handlerDef.arguments)) {
-        const originalHandler = handler;
-        handler = function() {
-          originalHandler.apply(this, handlerDef.arguments);
-        };
+        handlerDef.options = handlerDef.options || {};
+        handlerDef.options.arguments = handlerDef.arguments;
       }
 
-      keyboard.listenFor(handlerDef.key, this, handler, handlerDef.options);
+      keyboard.listenFor(
+        handlerDef.key, this, handlerDef.handler, handlerDef.options);
     });
   },
 

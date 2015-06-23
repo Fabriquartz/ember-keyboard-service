@@ -3,7 +3,7 @@ import $ from 'jquery';
 
 import KEYCODE_TO_KEY_MAP from '../fixtures/keycode-to-key-map';
 
-const { computed, isArray } = Ember;
+const { assert, computed, get, isArray } = Ember;
 
 function parseKeyShortHand(key, options) {
   // Parses sequences
@@ -90,7 +90,6 @@ export default Ember.Service.extend({
         if (e.altKey   && !options.requireAlt)   { return; }
         if (e.shiftKey && !options.requireShift) { return; }
 
-
         if (isArray(options.sequence) && options.sequence.length > 0) {
           // Handles sequences
           const [nextKey, ...nextSequence] = options.sequence;
@@ -101,7 +100,16 @@ export default Ember.Service.extend({
           this.listenForOnce(nextKey, context, callback, nextOptions);
         } else {
           // Calls the actual callback function supplied to listenFor
-          callback.call(context);
+          let fn = callback;
+
+          if (typeof callback === 'string') {
+            fn = get(context, callback);
+          }
+
+          assert('The callback function must exist',
+                 typeof fn === 'function');
+
+          fn.apply(context, options.arguments);
         }
 
         // If flagged listen once, then remove the listeners

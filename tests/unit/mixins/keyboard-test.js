@@ -3,7 +3,7 @@ import KeyboardService from 'ember-keyboard-service/services/keyboard';
 import KeyboardMixin from 'ember-keyboard-service/mixins/keyboard';
 import { module, test } from 'qunit';
 
-const computed = Ember.computed;
+const { computed, run } = Ember;
 
 module('Unit | Mixin | keyboard');
 
@@ -78,9 +78,14 @@ test('Handler must exist', function(assert) {
     ]
   });
 
+  var subject = KeyboardObject.create();
+
   assert.throws(() =>  {
-    KeyboardObject.create();
+    $(document.body).trigger($.Event('keydown', { key: 'x' }));
   }, /Assertion Failed/);
+
+  // Needs destroy or it will interfere with other tests...
+  run(() => subject.destroy());
 });
 
 test('I can declare keyboard handlers with options', function(assert) {

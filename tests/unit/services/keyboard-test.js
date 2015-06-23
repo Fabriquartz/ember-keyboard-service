@@ -16,6 +16,30 @@ test('it listens for key down presses', function(assert) {
   $(document.body).trigger($.Event('keydown', { key: 'o' }));
 });
 
+test('listener can be a function name', function(assert) {
+  assert.expect(1);
+  const service = this.subject();
+
+  const context = {
+    foo() { assert.ok(true); }
+  };
+
+  service.listenFor('x', context, 'foo');
+
+  $(document.body).trigger($.Event('keydown', { key: 'x' }));
+});
+
+test('it can handle an array of static arguments as option', function(assert) {
+  assert.expect(1);
+  const service = this.subject();
+
+  service.listenFor('x', this, function(n) { assert.equal(n, 42); }, {
+    arguments: [42]
+  });
+
+  $(document.body).trigger($.Event('keydown', { key: 'x' }));
+});
+
 test('it can handle ctrl modifier', function(assert) {
   assert.expect(1);
   const service = this.subject();
