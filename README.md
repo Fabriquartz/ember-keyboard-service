@@ -28,9 +28,16 @@ Then use `listenFor` to start listening for keyboard events:
 this.get('keyboard').listenFor('x', this, eventHandler);
 ```
 
+You can alternatively pass a function name instead of an eventHandler:
+
+```js
+this.get('keyboard').listenFor('x', this, 'xEventHandler');
+```
+
 You can optionally specify modifier keys:
 
 ```js
+// possible modifiers are: ctrl, cmd, alt, shift
 this.get('keyboard').listenFor('ctrl+alt+Delete', this, eventHandler);
 ```
 
@@ -45,6 +52,15 @@ arguments as you did to `listenFor`.
 
 ```js
 this.get('keyboard').stopListeningFor('x', this, eventHandler);
+```
+
+The service will not handle the event if the even target was an input or similar element.
+To override this you can do:
+
+```js
+this.get('keyboard').listenFor('x', this, eventHandler, {
+  actOnInputElement: true
+});
 ```
 
 For more usage examples you can check out the [tests](https://github.com/Fabriquartz/ember-keyboard-service/blob/master/tests/unit/services/keyboard-test.js)
@@ -85,5 +101,5 @@ For more usage examples you can check out the [tests](https://github.com/Fabriqu
 
 ## Todo
 
-- [ ] Add a flag to (not) ignore bare keystrokes when an input(-like) element is focussed.
+- [ ] Add `nctrl` modifer, which wil need `meta` on a mac and `ctrl` on other platforms as modifier
 - [ ] Improve key combo handling.
