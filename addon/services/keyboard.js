@@ -85,10 +85,11 @@ export default Ember.Service.extend({
         const [context, callback, options] = listener;
 
         // Check for modifier key requirements
-        if (e.ctrlKey  && !options.requireCtrl)  { return; }
-        if (e.metaKey  && !options.requireMeta)  { return; }
+        if (e.ctrlKey  && !(options.requireCtrl || options.requireCtrlOrMeta)) { return; }
+        if (e.metaKey  && !(options.requireMeta || options.requireCtrlOrMeta)) { return; }
         if (e.altKey   && !options.requireAlt)   { return; }
         if (e.shiftKey && !options.requireShift) { return; }
+
 
         if (isArray(options.sequence) && options.sequence.length > 0) {
           // Handles sequences

@@ -64,6 +64,19 @@ test('it can handle meta key modifier', function(assert) {
   $(document.body).trigger($.Event('keydown', { key: 'x', metaKey: true }));
 });
 
+test('it can handle meta or ctrl key modifier', function(assert) {
+  assert.expect(2);
+  const service = this.subject();
+
+  service.listenFor('x', this, function() { assert.ok(false, 'should not run with meta or ctrl pressed'); });
+  service.listenFor('x', this, function() { assert.ok(true); }, {
+    requireCtrlOrMeta: true
+  });
+
+  $(document.body).trigger($.Event('keydown', { key: 'x', metaKey: true }));
+  $(document.body).trigger($.Event('keydown', { key: 'x', ctrlKey: true }));
+});
+
 test('it can handle a combination of key modifiers', function(assert) {
   assert.expect(1);
   const service = this.subject();
