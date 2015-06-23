@@ -1,6 +1,6 @@
 {
   "name": "ember-keyboard-service",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A keyboard handling service for Ember apps",
   "directories": {
     "doc": "doc",
