@@ -3,7 +3,10 @@ import $ from 'jquery';
 
 import KEYCODE_TO_KEY_MAP from '../fixtures/keycode-to-key-map';
 
-const { assert, computed, get, isArray } = Ember;
+const { assert, computed, isArray } = Ember;
+
+const get = Ember.get;
+const set = Ember.set;
 
 function parseKeyShortHand(key, options) {
   // Parses sequences
@@ -42,11 +45,11 @@ export default Ember.Service.extend({
 
     key = parseKeyShortHand(key, options);
 
-    let listeners = this.get(`_listeners.${key}`);
+    let listeners = get(this, `_listeners.${key}`);
 
     if (!isArray(listeners)) {
       listeners = [];
-      this.set(`_listeners.${key}`, listeners);
+      set(this, `_listeners.${key}`, listeners);
     }
 
     listeners.push([context, listener, options]);
@@ -57,7 +60,7 @@ export default Ember.Service.extend({
 
     key = parseKeyShortHand(key, options);
 
-    let listeners = this.get(`_listeners.${key}`);
+    let listeners = get(this, `_listeners.${key}`);
 
     if (!isArray(listeners)) { return; }
 
@@ -71,7 +74,7 @@ export default Ember.Service.extend({
       return !(sameContext && sameListener && sameOptions);
     });
 
-    this.set(`_listeners.${key}`, filteredListeners);
+    set(this, `_listeners.${key}`, filteredListeners);
   },
 
   listenForOnce: function(key, context, listener, options) {
@@ -82,7 +85,7 @@ export default Ember.Service.extend({
 
   _handleKeyPress: function(e) {
     const key = e.key || KEYCODE_TO_KEY_MAP[e.keyCode];
-    let listeners = this.get(`_listeners.${key}`);
+    let listeners = get(this, `_listeners.${key}`);
 
 
     if (isArray(listeners)) {
@@ -131,13 +134,13 @@ export default Ember.Service.extend({
 
   init: function() {
     const handler = (...args) => this._handleKeyPress.apply(this, args);
-    this.set('_keyPressHandler', handler);
+    set(this, '_keyPressHandler', handler);
     $(() => $(document.body).on('keydown', handler));
     this._super.apply(arguments);
   },
 
   willDestroy: function() {
-    const handler = this.get('_keyPressHandler');
+    const handler = get(this, '_keyPressHandler');
     $(() => $(document.body).off('keydown', handler));
     this._super.apply(arguments);
   }
