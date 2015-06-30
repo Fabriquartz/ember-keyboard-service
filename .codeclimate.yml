@@ -1,13 +1,5 @@
-engines:
-  eslint:
-    enabled: true
-  watson:
-    enabled: true
-
-ratings:
-  paths:
-    - "app/**"
-    - "addon/**"
+languages:
+  JavaScript: true
 
 exclude_paths:
   - "test/*"
