@@ -3,7 +3,7 @@ import KeyboardService from 'ember-keyboard-service/services/keyboard';
 import KeyboardMixin from 'ember-keyboard-service/mixins/keyboard';
 import { module, test } from 'qunit';
 
-const { computed, run } = Ember;
+const { run } = Ember;
 
 module('Unit | Mixin | keyboard');
 
@@ -20,7 +20,7 @@ test('I can declare keyboard handlers', function(assert) {
     ]
   });
 
-  var subject = KeyboardObject.create();
+  KeyboardObject.create();
 
   $(document.body).trigger($.Event('keydown', { key: 'x' }));
 });
@@ -32,7 +32,7 @@ test('I can declare no keyboard handlers', function(assert) {
     keyboard: KeyboardService.create(),
   });
 
-  var subject = KeyboardObject.create();
+  KeyboardObject.create();
 });
 
 test('I can declare keyboard handlers with static arguments', function(assert) {
@@ -47,7 +47,7 @@ test('I can declare keyboard handlers with static arguments', function(assert) {
     ]
   });
 
-  var subject = KeyboardObject.create();
+  KeyboardObject.create();
 
   $(document.body).trigger($.Event('keydown', { key: 'x' }));
 });
@@ -64,8 +64,8 @@ test('It fires on multiple instances', function(assert) {
     ]
   });
 
-  var one = KeyboardObject.create();
-  var two = KeyboardObject.create();
+  KeyboardObject.create();
+  KeyboardObject.create();
 
   $(document.body).trigger($.Event('keydown', { key: 'x' }));
 });
@@ -100,7 +100,7 @@ test('I can declare keyboard handlers with options', function(assert) {
     ]
   });
 
-  var subject = KeyboardObject.create();
+  KeyboardObject.create();
 
   $(document.body).trigger($.Event('keydown', { key: 'x' }));
   $(document.body).trigger($.Event('keydown', { key: 'x' }));
@@ -124,7 +124,7 @@ test('keyboardHandlers is a concatenated property', function(assert) {
     ]
   });
 
-  var subject = ExtendedKeyboardObject.create();
+  ExtendedKeyboardObject.create();
 
   $(document.body).trigger($.Event('keydown', { key: 'x' }));
 });
