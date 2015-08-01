@@ -98,8 +98,3 @@ You can also specify static arguments for keyboard handlers:
 ```
 
 For more usage examples you can check out the [tests](https://github.com/Fabriquartz/ember-keyboard-service/blob/master/tests/unit/mixins/keyboard-test.js)
-
-## Todo
-
-- [ ] Add `nctrl` modifer, which wil need `meta` on a mac and `ctrl` on other platforms as modifier
-- [ ] Improve key combo handling.

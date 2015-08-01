@@ -3,48 +3,48 @@ import $ from 'jquery';
 
 import KEYCODE_TO_KEY_MAP from '../fixtures/keycode-to-key-map';
 
-const { assert, computed, isArray } = Ember;
+const { assert, computed, isArray, get, set } = Ember;
+const rMacOs = /Mac OS X/;
 
-const get = Ember.get;
-const set = Ember.set;
-
-function parseKeyShortHand(key, options) {
-  // Parses sequences
-  if (key.indexOf(',') !== -1) {
-    const sequence = key.split(',');
-    key = sequence.shift();
-    options.sequence = sequence;
-  }
-
-  // Parses shorthand (f.e. ctrl+shift+k)
-  if (key.indexOf('+') !== -1) {
-    const combination = key.split('+');
-    combination.forEach((k) => {
-      switch (k) {
-        case 'ctrl' : options.requireCtrl  = true; break;
-        case 'meta' : options.requireMeta  = true; break;
-        case 'alt'  : options.requireAlt   = true; break;
-        case 'shift': options.requireShift = true; break;
-        default: key = k;
-      }
-    });
-  }
+function parseKeyShortHand(key = '', options = {}) {
+  key.split('+').forEach((k) => {
+    switch (k) {
+      case 'ctrl' : options.requireCtrl  = true; break;
+      case 'meta' : options.requireMeta  = true; break;
+      case 'alt'  : options.requireAlt   = true; break;
+      case 'shift': options.requireShift = true; break;
+      default: key = k;
+    }
+  });
 
   return key;
 }
 
 function elementIsInputLike(element) {
-  return element.tagName === 'INPUT' || element.tagName === 'TEXTAREA';
+  return ['INPUT', 'TEXTAREA'].indexOf(element.tagName) !== -1;
+}
+
+function optionsAreEqual(optionsA, optionsB) {
+  const keysA = Object.keys(optionsA);
+  const keysB = Object.keys(optionsB);
+
+  const equalOptions = Object.keys(optionsA).reduce((allEqual, key) => {
+    return optionsA[key] === optionsB[key];
+  }, true);
+
+  return keysA.length === keysB.length && equalOptions;
+}
+
+function isMacOs() {
+  return rMacOs.test(window.navigator.userAgent);
 }
 
 export default Ember.Service.extend({
-  _listeners: computed(function () { return {}; }),
+  _listeners: computed(function () {
+    return {};
+  }),
 
-  listenFor: function(key, context, listener, options) {
-    if (options === null || options === undefined) { options = {}; }
-
-    key = parseKeyShortHand(key, options);
-
+  _listenersForKey(key) {
     let listeners = get(this, `_listeners.${key}`);
 
     if (!isArray(listeners)) {
@@ -52,96 +52,95 @@ export default Ember.Service.extend({
       set(this, `_listeners.${key}`, listeners);
     }
 
+    return listeners;
+  },
+
+  listenFor(key, context, listener, options = {}) {
+    key = parseKeyShortHand(key, options);
+    const listeners = this._listenersForKey(key);
+
     listeners.push([context, listener, options]);
   },
 
-  stopListeningFor: function(key, context, listener, options) {
-    if (options === null || options === undefined) { options = {}; }
-
+  stopListeningFor(key, context, listener, options = {}) {
     key = parseKeyShortHand(key, options);
 
-    let listeners = get(this, `_listeners.${key}`);
+    const listeners = this._listenersForKey(key);
 
-    if (!isArray(listeners)) { return; }
+    for (let index = listeners.length - 1; index >= 0; --index) {
+      const [lContext, lListener, lOptions] = listeners[index];
+      const sameContext  = lContext  === context;
+      const sameListener = lListener === listener;
+      const sameOptions  = optionsAreEqual(lOptions, options);
 
-    const filteredListeners = listeners.filter((l) => {
-      const sameContext  = l[0] === context;
-      const sameListener = l[1] === listener;
-
-      let sameOptions = true;
-      sameOptions = sameOptions && l[2].sequence === options.sequence;
-
-      return !(sameContext && sameListener && sameOptions);
-    });
-
-    set(this, `_listeners.${key}`, filteredListeners);
+      if (sameContext && sameListener && sameOptions) {
+        listeners.splice(index, 1);
+      }
+    }
   },
 
-  listenForOnce: function(key, context, listener, options) {
-    if (options === null || options === undefined) { options = {}; }
+  listenForOnce(key, context, listener, options = {}) {
     options.once = true;
     this.listenFor(key, context, listener, options);
   },
 
-  _handleKeyPress: function(e) {
+  _handleKeyPress(e) {
     const key = e.key || KEYCODE_TO_KEY_MAP[e.keyCode];
-    let listeners = get(this, `_listeners.${key}`);
+    const listeners = this._listenersForKey(key);
+
+    listeners.forEach((listener) => {
+      const [context, callback, options] = listener;
+
+      // Ignore input on input-like elements by default
+      if (elementIsInputLike(e.target) && !options.actOnInputElement) {
+        return;
+      }
+
+      if (options.requireCtrl && options.useCmdOnMac && isMacOs()) {
+        if (!e.metaKey) { return; }
+      } else {
+        if (e.ctrlKey  && !options.requireCtrl ) { return; }
+        if (e.metaKey  && !options.requireMeta ) { return; }
+      }
+
+      if (e.altKey   && !options.requireAlt)   { return; }
+      if (e.shiftKey && !options.requireShift) { return; }
 
 
-    if (isArray(listeners)) {
-      listeners.forEach((listener) => {
-        const [context, callback, options] = listener;
+      // Calls the actual callback function supplied to listenFor
+      let fn = callback;
 
-        // Ignore input on input-like elements by default
-        if (elementIsInputLike(e.target) && !options.actOnInputElement) { return; }
+      // if callback is string, lookup function with that name on context
+      // also assert that the resolved callback is a function.
+      if (typeof callback === 'string') {
+        fn = get(context, callback);
+        assert(`The callback function '${callback}' must exist and be a function`,
+               typeof fn === 'function');
+      } else {
+        assert(`Expected '${fn}' to be a function`, typeof fn === 'function');
+      }
 
-        // Check for modifier key requirements
-        if (e.ctrlKey  && !(options.requireCtrl || options.requireCtrlOrMeta)) { return; }
-        if (e.metaKey  && !(options.requireMeta || options.requireCtrlOrMeta)) { return; }
-        if (e.altKey   && !options.requireAlt)   { return; }
-        if (e.shiftKey && !options.requireShift) { return; }
+      fn.apply(context, options.arguments);
 
-        if (isArray(options.sequence) && options.sequence.length > 0) {
-          // Handles sequences
-          const [nextKey, ...nextSequence] = options.sequence;
-          const nextOptions = Object.create(options);
-
-          nextOptions.sequence = nextSequence;
-
-          this.listenForOnce(nextKey, context, callback, nextOptions);
-        } else {
-          // Calls the actual callback function supplied to listenFor
-          let fn = callback;
-
-          // if callback is string, lookup function with that name on context
-          if (typeof callback === 'string') {
-            fn = get(context, callback);
-          }
-
-          assert('The callback function must exist',
-                 typeof fn === 'function');
-
-          fn.apply(context, options.arguments);
-        }
-
-        // If flagged listen once, then remove the listeners
-        if (options.once) {
-          this.stopListeningFor(e.key, context, callback, options);
-        }
-      });
-    }
+      // If flagged listen once, then remove the listeners
+      if (options.once) {
+        this.stopListeningFor(key, context, callback, options);
+      }
+    });
   },
 
-  init: function() {
-    const handler = (...args) => this._handleKeyPress.apply(this, args);
+  init() {
+    const handler = (...args) => this._handleKeyPress(...args);
     set(this, '_keyPressHandler', handler);
     $(() => $(document.body).on('keydown', handler));
-    this._super.apply(arguments);
+
+    this._super(...arguments);
   },
 
-  willDestroy: function() {
+  willDestroy() {
     const handler = get(this, '_keyPressHandler');
     $(() => $(document.body).off('keydown', handler));
-    this._super.apply(arguments);
+
+    this._super(...arguments);
   }
 });
