@@ -116,7 +116,6 @@ test('it can handle meta key modifier', function(assert) {
 if (!/PhantomJS/i.test(window.navigator.userAgent)) {
   test('it can handle meta as ctrl key modifier on Mac OS X when useCmdOnMac is enabled', function(assert) {
     setUserAgent('Mac OS X');
-    console.log(window.navigator.userAgent);
     const service = this.subject();
 
     let cmdTriggered  = 0;
