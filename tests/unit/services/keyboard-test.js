@@ -1,15 +1,19 @@
 import $ from 'jquery';
 import { moduleFor, test } from 'ember-qunit';
 
-let originalNavigator = window.navigator.__lookupGetter__('userAgent');
-function setUserAgent(str) {
-  window.navigator.__defineGetter__('userAgent', function(){
-      return str;
-  });
-}
+// Haven't found a reliable way of spoofing user agent on phantom js.
+var setUserAgent, resetUserAgent;
+if (!/PhantomJS/i.test(window.navigator.userAgent)) {
+  const originalNavigator = window.navigator.__lookupGetter__('userAgent');
+  setUserAgent = function setUserAgent(str) {
+    window.navigator.__defineGetter__('userAgent', function(){
+        return str;
+    });
+  };
 
-function resetUserAgent() {
-  window.navigator.__defineGetter__('userAgent', originalNavigator);
+  resetUserAgent = function resetUserAgent() {
+    window.navigator.__defineGetter__('userAgent', originalNavigator);
+  };
 }
 
 moduleFor('service:keyboard', 'Unit | Service | keyboard');
@@ -108,40 +112,45 @@ test('it can handle meta key modifier', function(assert) {
   $(document.body).trigger($.Event('keydown', { key: 'x', metaKey: true }));
 });
 
-test('it can handle meta as ctrl key modifier on Mac OS X when useCmdOnMac is enabled', function(assert) {
-  setUserAgent('Mac OS X');
-  const service = this.subject();
+// Haven't found a reliable way of spoofing user agent on phantom js.
+if (!/PhantomJS/i.test(window.navigator.userAgent)) {
+  test('it can handle meta as ctrl key modifier on Mac OS X when useCmdOnMac is enabled', function(assert) {
+    setUserAgent('Mac OS X');
+    console.log(window.navigator.userAgent);
+    const service = this.subject();
 
-  let cmdTriggered  = 0;
-  let ctrlTriggered = 0;
+    let cmdTriggered  = 0;
+    let ctrlTriggered = 0;
 
-  service.listenFor('ctrl+x', this, function() {
-    ctrlTriggered += 1;
+    service.listenFor('ctrl+x', this, function() {
+      ctrlTriggered += 1;
+    });
+    service.listenFor('ctrl+x', this, function() {
+      cmdTriggered += 1;
+    }, {
+      useCmdOnMac: true
+    });
+
+
+    $(document.body).trigger($.Event('keydown', { key: 'x', ctrlKey: true }));
+    assert.equal(ctrlTriggered, 1, 'ctrl hit on mac - ctrl count is 1');
+    assert.equal(cmdTriggered,  0, 'ctrl hit on mac - cmd count is 0');
+    $(document.body).trigger($.Event('keydown', { key: 'x', metaKey: true }));
+    assert.equal(ctrlTriggered, 1, 'cmd hit on mac - ctrl count is 1');
+    assert.equal(cmdTriggered,  1, 'cmd hit on mac - cmd count is 1');
+
+    setUserAgent('Windows NT');
+
+    $(document.body).trigger($.Event('keydown', { key: 'x', ctrlKey: true }));
+    assert.equal(ctrlTriggered, 2, 'ctrl hit on win - ctrl count is 2');
+    assert.equal(cmdTriggered,  2, 'ctrl hit on win - cmd count is 2');
+    $(document.body).trigger($.Event('keydown', { key: 'x', metaKey: true }));
+    assert.equal(ctrlTriggered, 2, 'cmd hit on win - ctrl count is 2');
+    assert.equal(cmdTriggered,  2, 'cmd hit on win - cmd count is 2');
+
+    resetUserAgent();
   });
-  service.listenFor('ctrl+x', this, function() {
-    cmdTriggered += 1;
-  }, {
-    useCmdOnMac: true
-  });
-
-  $(document.body).trigger($.Event('keydown', { key: 'x', ctrlKey: true }));
-  assert.equal(ctrlTriggered, 1, 'ctrl hit on mac - ctrl count is 1');
-  assert.equal(cmdTriggered,  0, 'ctrl hit on mac - cmd count is 0');
-  $(document.body).trigger($.Event('keydown', { key: 'x', metaKey: true }));
-  assert.equal(ctrlTriggered, 1, 'cmd hit on mac - ctrl count is 1');
-  assert.equal(cmdTriggered,  1, 'cmd hit on mac - cmd count is 1');
-
-  setUserAgent('Windows NT');
-
-  $(document.body).trigger($.Event('keydown', { key: 'x', ctrlKey: true }));
-  assert.equal(ctrlTriggered, 2, 'ctrl hit on win - ctrl count is 2');
-  assert.equal(cmdTriggered,  2, 'ctrl hit on win - cmd count is 2');
-  $(document.body).trigger($.Event('keydown', { key: 'x', metaKey: true }));
-  assert.equal(ctrlTriggered, 2, 'cmd hit on win - ctrl count is 2');
-  assert.equal(cmdTriggered,  2, 'cmd hit on win - cmd count is 2');
-
-  resetUserAgent();
-});
+}
 
 test('it can handle a combination of key modifiers', function(assert) {
   assert.expect(1);
