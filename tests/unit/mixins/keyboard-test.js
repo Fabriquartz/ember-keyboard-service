@@ -41,7 +41,7 @@ test('I can declare keyboard handlers with static arguments', function(assert) {
   var KeyboardObject = Ember.Object.extend(KeyboardMixin, {
     keyboard: KeyboardService.create(),
 
-    handler(arg) { assert.equal(arg, 'foo'); },
+    handler(e, arg) { assert.equal(arg, 'foo'); },
     keyboardHandlers: [
       { key: 'x', handler: 'handler', arguments: ['foo'] }
     ]

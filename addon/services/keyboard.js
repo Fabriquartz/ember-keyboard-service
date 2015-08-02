@@ -133,12 +133,15 @@ export default Ember.Service.extend({
         assert(`Expected '${fn}' to be a function`, typeof fn === 'function');
       }
 
+      // Push the event object onto arguments
+      const args = options.arguments || [];
+      args.unshift(e);
+
       if (options.debounce > 0) {
         // fancy for: `debounce(context, fn, ...options.arguments, options.debounce)`
-        debounce.apply(undefined,
-                [context, fn].concat(options.arguments, [options.debounce]));
+        debounce.apply(undefined, [context, fn].concat(args, [options.debounce]));
       } else {
-        fn.apply(context, options.arguments);
+        fn.apply(context, args);
       }
 
       // If flagged listen once, then remove the listeners

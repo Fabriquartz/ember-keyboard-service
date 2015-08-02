@@ -44,11 +44,20 @@ test('listener can be a function name', function(assert) {
   $(document.body).trigger($.Event('keydown', { key: 'x' }));
 });
 
+test('the first argument to the callback is the event object', function(assert) {
+  const service = this.subject();
+
+  const event = { key: 'x' };
+  service.listenFor('x', this, function(e) { assert.equal(e.key, event.key); });
+
+  $(document.body).trigger($.Event('keydown', event));
+});
+
 test('it can handle an array of static arguments as option', function(assert) {
   assert.expect(1);
   const service = this.subject();
 
-  service.listenFor('x', this, function(n) { assert.equal(n, 42); }, {
+  service.listenFor('x', this, function(e, n) { assert.equal(n, 42); }, {
     arguments: [42]
   });
 
