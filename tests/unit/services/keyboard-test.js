@@ -177,6 +177,24 @@ test('it can handle a combination shorthand', function(assert) {
   $(document.body).trigger($.Event('keydown', { key: 'x', ctrlKey: true }));
 });
 
+test('cmd in shorthand is alternative for meta', function(assert) {
+  assert.expect(1);
+  const service = this.subject();
+
+  service.listenFor('cmd+x', this, function() { assert.ok(true); });
+
+  $(document.body).trigger($.Event('keydown', { key: 'x', metaKey: true }));
+});
+
+test('option in shorthand is alternative for alt', function(assert) {
+  assert.expect(1);
+  const service = this.subject();
+
+  service.listenFor('option+x', this, function() { assert.ok(true); });
+
+  $(document.body).trigger($.Event('keydown', { key: 'x', altKey: true }));
+});
+
 test('stopListeningFor removes the keyboard handler', function(assert) {
   assert.expect(3);
   const service = this.subject();
