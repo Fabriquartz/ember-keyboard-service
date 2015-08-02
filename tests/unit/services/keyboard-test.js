@@ -265,3 +265,16 @@ test('if event.target is an input handle if option is set', function(assert) {
   $(document.body).trigger($.Event('keydown', { key: 'x', target: input }));
   $(document.body).trigger($.Event('keydown', { key: 'x', target: textarea }));
 });
+
+test('options.debounce wraps callback in run.debounce with specified time', function(assert) {
+  assert.expect(1);
+  const done = assert.async();
+  const service = this.subject();
+
+  service.listenFor('x', this, function() { assert.ok(true); done(); }, {
+    debounce: 1,
+  });
+
+  $(document.body).trigger($.Event('keydown', { key: 'x' }));
+  $(document.body).trigger($.Event('keydown', { key: 'x' }));
+});

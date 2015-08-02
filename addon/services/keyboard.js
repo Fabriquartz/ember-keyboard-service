@@ -4,6 +4,7 @@ import $ from 'jquery';
 import KEYCODE_TO_KEY_MAP from '../fixtures/keycode-to-key-map';
 
 const { assert, computed, isArray, get, set } = Ember;
+const { debounce } = Ember.run;
 const rMacOs = /Mac OS X/;
 
 function parseKeyShortHand(key = '', options = {}) {
@@ -110,6 +111,7 @@ export default Ember.Service.extend({
         return;
       }
 
+      // Check modifier key requirements
       if (options.requireCtrl && options.useCmdOnMac && isMacOs()) {
         if (!e.metaKey) { return; }
       } else {
@@ -134,7 +136,12 @@ export default Ember.Service.extend({
         assert(`Expected '${fn}' to be a function`, typeof fn === 'function');
       }
 
-      fn.apply(context, options.arguments);
+      if (options.debounce > 0) {
+        // fancy for: `debounce(context, fn, ...options.arguments, options.debounce)`
+        debounce.apply(undefined, [context, fn].concat(options.arguments, [options.debounce]));
+      } else {
+        fn.apply(context, options.arguments);
+      }
 
       // If flagged listen once, then remove the listeners
       if (options.once) {
