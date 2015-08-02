@@ -7,7 +7,7 @@ const { assert, computed, isArray, get, set } = Ember;
 const { debounce } = Ember.run;
 const rMacOs = /Mac OS X/;
 
-function parseKeyShortHand(key = '', options = {}) {
+function parseKeyShortHand(key, options) {
   key.split('+').forEach((k) => {
     switch (k) {
       case 'ctrl':
@@ -135,7 +135,8 @@ export default Ember.Service.extend({
 
       if (options.debounce > 0) {
         // fancy for: `debounce(context, fn, ...options.arguments, options.debounce)`
-        debounce.apply(undefined, [context, fn].concat(options.arguments, [options.debounce]));
+        debounce.apply(undefined,
+                [context, fn].concat(options.arguments, [options.debounce]));
       } else {
         fn.apply(context, options.arguments);
       }
