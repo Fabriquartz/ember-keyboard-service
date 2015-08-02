@@ -9,7 +9,7 @@ export default Ember.Mixin.create({
   concatenatedProperties: 'keyboardHandlers',
 
   init() {
-    this._super.apply(this, arguments);
+    this._super(...arguments);
 
     const keyboard = this.get('keyboard');
     const handlerDefinitions = this.get('keyboardHandlers');
@@ -17,23 +17,22 @@ export default Ember.Mixin.create({
     if (!isArray(handlerDefinitions)) { return; }
 
     this.get('keyboardHandlers').forEach((handlerDef) => {
+      let { key, handler, options } = handlerDef;
       if (isArray(handlerDef.arguments)) {
-        handlerDef.options = handlerDef.options || {};
-        handlerDef.options.arguments = handlerDef.arguments;
+        options = options || {};
+        options.arguments = handlerDef.arguments;
       }
 
-      keyboard.listenFor(
-        handlerDef.key, this, handlerDef.handler, handlerDef.options);
+      keyboard.listenFor(key, this, handler, options);
     });
   },
 
   willDestroy() {
     const keyboard = this.get('keyboard');
-    this.get('keyboardHandlers').forEach((handlerDef) => {
-      keyboard.stopListeningFor(handlerDef.key,
-        this, handlerDef.handler, handlerDef.options);
+    this.get('keyboardHandlers').forEach(({ key, handler, options }) => {
+      keyboard.stopListeningFor(key, this, handler, options);
     });
 
-    this._super.apply(this, arguments);
+    this._super(...arguments);
   }
 });
