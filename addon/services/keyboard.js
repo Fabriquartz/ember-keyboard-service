@@ -103,9 +103,7 @@ export default Ember.Service.extend({
     const key = e.key || KEYCODE_TO_KEY_MAP[e.keyCode];
     const listeners = this._listenersForKey(key);
 
-    listeners.forEach((listener) => {
-      const [context, callback, options] = listener;
-
+    listeners.forEach(([context, callback, options]) => {
       // Ignore input on input-like elements by default
       if (elementIsInputLike(e.target) && !options.actOnInputElement) {
         return;
@@ -123,7 +121,6 @@ export default Ember.Service.extend({
       if (e.shiftKey && !options.requireShift) { return; }
 
 
-      // Calls the actual callback function supplied to listenFor
       let fn = callback;
 
       // if callback is string, lookup function with that name on context
