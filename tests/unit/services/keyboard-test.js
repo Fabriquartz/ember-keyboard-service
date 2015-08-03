@@ -1,5 +1,8 @@
+import Ember from 'ember';
 import $ from 'jquery';
 import { moduleFor, test } from 'ember-qunit';
+
+const { run } = Ember;
 
 // Haven't found a reliable way of spoofing user agent on phantom js.
 var setUserAgent, resetUserAgent;
@@ -304,4 +307,19 @@ test('options.throttle wraps callback in run.throttle with specified time', func
     $(document.body).trigger($.Event('keydown', { key: 'x' }));
     done();
   }, 1);
+});
+
+test('options.scheduleOnce wraps callback in run.once', function(assert) {
+  assert.expect(1);
+  const service = this.subject();
+
+  service.listenFor('x', this, function() { assert.ok(true); }, {
+    scheduleOnce: true,
+  });
+
+  run(() => {
+    $(document.body).trigger($.Event('keydown', { key: 'x' }));
+    $(document.body).trigger($.Event('keydown', { key: 'x' }));
+    $(document.body).trigger($.Event('keydown', { key: 'x' }));
+  });
 });
