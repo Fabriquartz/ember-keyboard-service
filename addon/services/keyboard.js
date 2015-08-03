@@ -1,39 +1,12 @@
 import Ember from 'ember';
 import $ from 'jquery';
 
+import parseKeyShorthand from '../utils/parse-key-shorthand';
 import KEYCODE_TO_KEY_MAP from '../fixtures/keycode-to-key-map';
 
 const { assert, computed, isArray, get, set } = Ember;
 const { debounce, once, throttle } = Ember.run;
 const rMacOs = /Mac OS X/;
-
-function parseKeyShortHand(key, options) {
-  key.split('+').forEach((k) => {
-    switch (k) {
-      case 'ctrl':
-        options.requireCtrl = true;
-        break;
-
-      case 'meta':
-      case 'cmd':
-        options.requireMeta  = true;
-        break;
-
-      case 'alt':
-      case 'option':
-        options.requireAlt = true;
-        break;
-
-      case 'shift':
-        options.requireShift = true;
-        break;
-
-      default: key = k;
-    }
-  });
-
-  return key;
-}
 
 function elementIsInputLike(element) {
   return ['INPUT', 'TEXTAREA'].indexOf(element.tagName) !== -1;
@@ -71,14 +44,14 @@ export default Ember.Service.extend({
   },
 
   listenFor(key, context, listener, options = {}) {
-    key = parseKeyShortHand(key, options);
+    key = parseKeyShorthand(key, options);
     const listeners = this._listenersForKey(key);
 
     listeners.push([context, listener, options]);
   },
 
   stopListeningFor(key, context, listener, options = {}) {
-    key = parseKeyShortHand(key, options);
+    key = parseKeyShorthand(key, options);
 
     const listeners = this._listenersForKey(key);
 
