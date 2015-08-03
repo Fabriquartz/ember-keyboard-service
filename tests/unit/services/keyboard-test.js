@@ -287,3 +287,21 @@ test('options.debounce wraps callback in run.debounce with specified time', func
   $(document.body).trigger($.Event('keydown', { key: 'x' }));
   $(document.body).trigger($.Event('keydown', { key: 'x' }));
 });
+
+test('options.throttle wraps callback in run.throttle with specified time', function(assert) {
+  assert.expect(2);
+  const done = assert.async();
+  const service = this.subject();
+
+  service.listenFor('x', this, function() { assert.ok(true); }, {
+    throttle: 1,
+  });
+
+  $(document.body).trigger($.Event('keydown', { key: 'x' }));
+  $(document.body).trigger($.Event('keydown', { key: 'x' }));
+
+  setTimeout(() => {
+    $(document.body).trigger($.Event('keydown', { key: 'x' }));
+    done();
+  }, 1);
+});

@@ -4,7 +4,7 @@ import $ from 'jquery';
 import KEYCODE_TO_KEY_MAP from '../fixtures/keycode-to-key-map';
 
 const { assert, computed, isArray, get, set } = Ember;
-const { debounce } = Ember.run;
+const { debounce, throttle } = Ember.run;
 const rMacOs = /Mac OS X/;
 
 function parseKeyShortHand(key, options) {
@@ -140,6 +140,8 @@ export default Ember.Service.extend({
       if (options.debounce > 0) {
         // fancy for: `debounce(context, fn, ...options.arguments, options.debounce)`
         debounce.apply(undefined, [context, fn].concat(args, [options.debounce]));
+      } else if (options.throttle > 0) {
+        throttle.apply(undefined, [context, fn].concat(args, [options.throttle]));
       } else {
         fn.apply(context, args);
       }
