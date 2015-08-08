@@ -27,6 +27,20 @@ function isMacOs() {
   return rMacOs.test(window.navigator.userAgent);
 }
 
+function withMultipleKeys(fn) {
+  return function(keys, context, listener, options = {}) {
+    if (!isArray(keys)) {
+      keys = [keys];
+    }
+
+    keys.forEach((key) => {
+      let singleOptions = $.extend({}, options);
+      key = parseKeyShorthand(key, singleOptions);
+      fn.call(this, key, context, listener, singleOptions);
+    });
+  };
+}
+
 export default Ember.Service.extend({
   _listeners: computed(function () {
     return {};
@@ -43,20 +57,17 @@ export default Ember.Service.extend({
     return listeners;
   },
 
-  listenFor(key, context, listener, options = {}) {
-    key = parseKeyShorthand(key, options);
+  listenFor: withMultipleKeys(function(key, context, listener, options) {
     const listeners = this._listenersForKey(key);
-
     listeners.push([context, listener, options]);
-  },
+  }),
 
-  stopListeningFor(key, context, listener, options = {}) {
-    key = parseKeyShorthand(key, options);
-
+  stopListeningFor: withMultipleKeys(function(key, context, listener, options) {
     const listeners = this._listenersForKey(key);
 
     for (let index = listeners.length - 1; index >= 0; --index) {
       const [lContext, lListener, lOptions] = listeners[index];
+
       const sameContext  = lContext  === context;
       const sameListener = lListener === listener;
       const sameOptions  = optionsAreEqual(lOptions, options);
@@ -65,7 +76,7 @@ export default Ember.Service.extend({
         listeners.splice(index, 1);
       }
     }
-  },
+  }),
 
   listenForOnce(key, context, listener, options = {}) {
     options.once = true;

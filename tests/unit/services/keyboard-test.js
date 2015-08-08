@@ -232,6 +232,39 @@ test('it can handle the space key', function(assert) {
   $(document.body).trigger($.Event('keydown', { key: ' ' }));
 });
 
+test('multiple shortcuts can be specified at once', function(assert) {
+  assert.expect(2);
+  const service = this.subject();
+
+  service.listenFor(['a', 'b'], this, function() { assert.ok(true); });
+
+  $(document.body).trigger($.Event('keydown', { key: 'a' }));
+  $(document.body).trigger($.Event('keydown', { key: 'b' }));
+});
+
+test('multiple shortcuts can be specified at once - with modifiers', function(assert) {
+  assert.expect(2);
+  const service = this.subject();
+
+  service.listenFor(['ctrl+a', 'shift+b'], this, function() { assert.ok(true); });
+
+  $(document.body).trigger($.Event('keydown', { key: 'a', ctrlKey: true }));
+  $(document.body).trigger($.Event('keydown', { key: 'b', ctrlKey: true }));
+  $(document.body).trigger($.Event('keydown', { key: 'b', shiftKey: true }));
+});
+
+test('stopListingFor also support multiple shortcuts', function(assert) {
+  assert.expect(0);
+  const service = this.subject();
+
+  const callback = function() { assert.ok(false); };
+  service.listenFor(['ctrl+a', 'shift+b'], this, callback);
+  service.stopListeningFor(['ctrl+a', 'shift+b'], this, callback);
+
+  $(document.body).trigger($.Event('keydown', { key: 'a', ctrlKey: true }));
+  $(document.body).trigger($.Event('keydown', { key: 'b', shiftKey: true }));
+});
+
 test('if event.target is an input ignore by default', function(assert) {
   assert.expect(0);
   const service = this.subject();
