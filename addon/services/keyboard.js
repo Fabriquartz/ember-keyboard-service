@@ -121,6 +121,8 @@ export default Ember.Service.extend({
       const args = options.arguments || [];
       args.unshift(e);
 
+      // Use run loop if debounce, throttle or scheduleOnce is specified
+      // else call callback immediately
       if (options.debounce > 0) {
         // fancy for: `debounce(context, fn, ...options.arguments, options.debounce)`
         debounce.apply(undefined, [context, fn].concat(args, [options.debounce]));
