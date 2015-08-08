@@ -11,6 +11,38 @@ using the additional mixin.
 ember install ember-keyboard-service
 ```
 
+## Mixin Usage
+
+Mixin the mixin and declare some keyboardHandlers
+
+```js
+Ember.Object.extend(KeyboardMixin, {
+  keyboardHandlers: [
+    { key: 'ctrl+x', handler: 'cut'   }
+    { key: 'ctrl+c', handler: 'copy'  }
+    { key: 'ctrl+v', handler: 'paste' }
+  ],
+
+  cut() {
+    console.log("every day i'm cuttin");
+  },
+
+  copy() {
+    console.log("every day i'm copyin");
+  },
+
+  paste() {
+    console.log("every day i'm pastin");
+  }
+});
+```
+
+You can also specify static arguments for keyboard handlers:
+
+```js
+{ key: 'ctrl+g', handler: 'goto', arguments: [42] }
+```
+
 ## Service Usage
 
 Use `Ember.inject.service` to inject the service onto your Ember object.
