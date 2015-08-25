@@ -30,7 +30,7 @@ for `'cmd'`, on any other system it is just `'ctrl'`.
 Use it do declare shortcuts in a simple manner.
 
 ```js
-import KeyboardMixin from 'ember-keyboard-service';
+import KeyboardMixin from 'ember-keyboard-service/mixins/keyboard';
 
 Ember.Object.extend(KeyboardMixin, {
   keyboardHandlers: [
