@@ -47,6 +47,10 @@ export default Ember.Service.extend({
   }),
 
   _listenersForKey(key) {
+    if (key === '.') {
+      key = 'dot';
+    }
+
     let listeners = get(this, `_listeners.${key}`);
 
     if (!isArray(listeners)) {
@@ -84,8 +88,12 @@ export default Ember.Service.extend({
   },
 
   _handleKeyPress(e) {
-    const key = e.key || KEYCODE_TO_KEY_MAP[e.keyCode];
+    let key = e.key || KEYCODE_TO_KEY_MAP[e.keyCode];
     const listeners = this._listenersForKey(key);
+
+    if (key === '.') {
+      key = 'dot';
+    }
 
     listeners.forEach(([context, callback, options]) => {
       // Ignore input on input-like elements by default

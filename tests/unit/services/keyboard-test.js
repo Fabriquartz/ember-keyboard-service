@@ -338,3 +338,16 @@ test('options.scheduleOnce wraps callback in run.once', function(assert) {
     $(document.body).trigger($.Event('keydown', { key: 'x' }));
   });
 });
+
+// regressions
+
+test('listening for "." works', function(assert) {
+  assert.expect(1);
+  const service = this.subject();
+
+  service.listenFor('.', this, function() { assert.ok(true); });
+
+  run(() => {
+    $(document.body).trigger($.Event('keydown', { key: '.' }));
+  });
+});
