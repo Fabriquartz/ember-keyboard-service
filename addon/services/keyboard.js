@@ -102,16 +102,15 @@ export default Ember.Service.extend({
       }
 
       // Check modifier key requirements
-      if (options.requireCtrl && options.useCmdOnMac && isMacOs()) {
-        if (!e.metaKey) { return; }
+      if (isMacOs() && options.useCmdOnMac) {
+        if (e.metaKey === !options.requireCtrl) { return; }
       } else {
-        if (e.ctrlKey  && !options.requireCtrl ) { return; }
-        if (e.metaKey  && !options.requireMeta ) { return; }
+        if (e.ctrlKey === !options.requireCtrl ) { return; }
+        if (e.metaKey === !options.requireMeta ) { return; }
       }
 
-      if (e.altKey   && !options.requireAlt)   { return; }
-      if (e.shiftKey && !options.requireShift) { return; }
-
+      if (e.altKey === !options.requireAlt)   { return; }
+      if (e.shiftKey === !options.requireShift) { return; }
 
       let fn = callback;
 
