@@ -126,8 +126,7 @@ export default Ember.Service.extend({
       }
 
       // Push the event object onto arguments
-      const args = options.arguments || [];
-      args.unshift(e);
+      const args = [e].concat(options.arguments || []);
 
       // Use run loop if debounce, throttle or scheduleOnce is specified
       // else call callback immediately
