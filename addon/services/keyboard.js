@@ -9,7 +9,7 @@ const { debounce, once, throttle } = Ember.run;
 const rMacOs = /Mac OS X/;
 
 function elementIsInputLike(element) {
-  return ['INPUT', 'TEXTAREA'].indexOf(element.tagName) !== -1;
+  return ['INPUT', 'TEXTAREA'].indexOf(element.tagName) !== -1 || Ember.$(element).closest('[contenteditable]').is('[contenteditable="true"]');
 }
 
 function optionsAreEqual(optionsA, optionsB) {
