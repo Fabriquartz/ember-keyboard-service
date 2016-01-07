@@ -6,6 +6,9 @@ The keyboard service helps you let your app respond to keyboard input.
 You can either do this declaratively with a DSL mixin, or use the lower level
 service, that gives you more control.
 
+# NO LONGER BEING MAINTAINED
+I'd recommend using [ember-keyboard](https://github.com/null-null-null/ember-keyboard)
+
 ## Installation
 
 ```shell
