@@ -7,7 +7,7 @@ You can either do this declaratively with a DSL mixin, or use the lower level
 service, that gives you more control.
 
 # NO LONGER BEING MAINTAINED
-I'd recommend using [ember-keyboard](https://github.com/null-null-null/ember-keyboard)
+I'd recommend using either the [`ember-keyboard`](https://github.com/null-null-null/ember-keyboard) mixin or the [`ember-key-manager`](https://github.com/IcarusWorks/ember-key-manager/) service.
 
 ## Installation
 
