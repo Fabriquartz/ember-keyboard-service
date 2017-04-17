@@ -88,7 +88,7 @@ export default Ember.Service.extend({
   },
 
   _handleKeyPress(e) {
-    let key = e.key || KEYCODE_TO_KEY_MAP[e.keyCode];
+    let key = KEYCODE_TO_KEY_MAP[e.keyCode] || e.key;
     const listeners = this._listenersForKey(key);
 
     if (key === '.') {
