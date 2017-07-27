@@ -19,11 +19,24 @@ if (!/PhantomJS/i.test(window.navigator.userAgent)) {
   };
 }
 
-moduleFor('service:keyboard', 'Unit | Service | keyboard');
+let service;
+moduleFor('keyboard', 'Unit | Service | keyboard', {
+  unit:  true,
+  needs: ['service:keyboard'],
+
+  beforeEach() {
+    service = this.subject({
+      activities: [{ id: 1 }],
+
+      selectionService: {
+        setContent() { }
+      }
+    });
+  }
+});
 
 test('it listens for key down presses', function(assert) {
   assert.expect(3);
-  const service = this.subject();
 
   service.listenFor('f', this, function() { assert.ok(true); });
   service.listenFor('o', this, function() { assert.ok(true); });
