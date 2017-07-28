@@ -1,11 +1,11 @@
 import KeyboardService  from 'ember-keyboard-service/services/keyboard';
 import KeyboardMixin    from 'ember-keyboard-service/mixins/keyboard';
-import { module, test } from 'ember-qunit';
+import { moduleForComponent, test } from 'ember-qunit';
 import Object           from 'ember-object';
 import $                from 'jquery';
 import run              from 'ember-runloop';
 
-module('Unit | Mixin | keyboard', { needs: ['keyboard'] });
+moduleForComponent('Unit | Mixin | keyboard', { integration: true });
 
 // Replace this with your real tests.
 test('I can declare keyboard handlers', function(assert) {

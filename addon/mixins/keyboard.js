@@ -1,9 +1,8 @@
 import Ember from 'ember';
 import Mixin from 'ember-metal/mixin';
-import Service  from 'ember-service/inject';
+import service  from 'ember-service/inject';
 
 const { isArray } = Ember;
-const service = Service;
 
 export default Mixin.create({
   keyboard: service(),

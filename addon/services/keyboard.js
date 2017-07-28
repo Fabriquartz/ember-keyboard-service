@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import $     from 'jquery';
 import run   from 'ember-runloop';
-import Service  from 'ember-service/inject';
+import Service  from 'ember-service';
 
 import parseKeyShorthand from '../utils/parse-key-shorthand';
 import KEYCODE_TO_KEY_MAP from '../fixtures/keycode-to-key-map';

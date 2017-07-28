@@ -17,9 +17,8 @@ if (!/PhantomJS/i.test(window.navigator.userAgent)) {
   };
 }
 
-moduleFor('keyboard', 'Unit | Service | keyboard', {
-  unit:  true,
-  needs: ['service:keyboard'],
+moduleFor('service:keyboard', 'Unit | Service | keyboard', {
+  unit: true,
 
   beforeEach() {
     service = this.subject({
