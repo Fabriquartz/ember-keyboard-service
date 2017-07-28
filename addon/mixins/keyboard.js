@@ -1,9 +1,11 @@
 import Ember from 'ember';
+import Mixin from 'ember-metal/mixin';
+import Service  from 'ember-service/inject';
 
 const { isArray } = Ember;
-const service = Ember.inject.service;
+const service = Service;
 
-export default Ember.Mixin.create({
+export default Mixin.create({
   keyboard: service(),
 
   concatenatedProperties: 'keyboardHandlers',
@@ -11,8 +13,8 @@ export default Ember.Mixin.create({
   init() {
     this._super(...arguments);
 
-    const keyboard = this.get('keyboard');
-    const handlerDefinitions = this.get('keyboardHandlers');
+    let keyboard = this.get('keyboard');
+    let handlerDefinitions = this.get('keyboardHandlers');
 
     if (!isArray(handlerDefinitions)) { return; }
 
@@ -28,7 +30,7 @@ export default Ember.Mixin.create({
   },
 
   willDestroy() {
-    const keyboard = this.get('keyboard');
+    let keyboard = this.get('keyboard');
     this.get('keyboardHandlers').forEach(({ key, handler, options }) => {
       keyboard.stopListeningFor(key, this, handler, options);
     });

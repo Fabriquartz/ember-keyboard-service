@@ -6,6 +6,6 @@ module.exports = {
     'chrome'
   ],
   launch_in_dev: [
-    'Chrome'
+    'chrome'
   ]
 };

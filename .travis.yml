@@ -1,7 +1,7 @@
 ---
 language: node_js
 node_js:
-  - "6.9.1"
+  - "7.9.0"
 
 sudo: true
 dist: trusty
@@ -33,12 +33,14 @@ before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - "npm config set spin false"
-  - "npm install -g npm@^2"
+  - "npm install -g npm@^4"
+  - npm config set spin false
+  - npm install -g bower
+  - bower --version
 
 install:
-  - npm install -g bower
   - npm install
   - bower install
 
 script:
-  - ember try $EMBER_TRY_SCENARIO test --skip-cleanup
+  - ember try:one $EMBER_TRY_SCENARIO test --skip-cleanup
