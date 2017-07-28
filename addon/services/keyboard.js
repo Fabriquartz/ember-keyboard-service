@@ -1,11 +1,13 @@
 import Ember from 'ember';
-import $ from 'jquery';
+import $     from 'jquery';
+import run   from 'ember-runloop';
+import Service  from 'ember-service';
 
 import parseKeyShorthand from '../utils/parse-key-shorthand';
 import KEYCODE_TO_KEY_MAP from '../fixtures/keycode-to-key-map';
 
 const { assert, computed, isArray, get, set } = Ember;
-const { debounce, once, throttle } = Ember.run;
+const { debounce, once, throttle } = run;
 const rMacOs = /Mac OS X/;
 
 function elementIsInputLike(element) {
@@ -13,10 +15,10 @@ function elementIsInputLike(element) {
 }
 
 function optionsAreEqual(optionsA, optionsB) {
-  const keysA = Object.keys(optionsA);
-  const keysB = Object.keys(optionsB);
+  let keysA = Object.keys(optionsA);
+  let keysB = Object.keys(optionsB);
 
-  const equalOptions = Object.keys(optionsA).reduce((allEqual, key) => {
+  let equalOptions = Object.keys(optionsA).reduce((allEqual, key) => {
     return optionsA[key] === optionsB[key];
   }, true);
 
@@ -41,8 +43,8 @@ function withMultipleKeys(fn) {
   };
 }
 
-export default Ember.Service.extend({
-  _listeners: computed(function () {
+export default Service.extend({
+  _listeners: computed(function() {
     return {};
   }),
 
@@ -62,19 +64,19 @@ export default Ember.Service.extend({
   },
 
   listenFor: withMultipleKeys(function(key, context, listener, options) {
-    const listeners = this._listenersForKey(key);
+    let listeners = this._listenersForKey(key);
     listeners.push([context, listener, options]);
   }),
 
   stopListeningFor: withMultipleKeys(function(key, context, listener, options) {
-    const listeners = this._listenersForKey(key);
+    let listeners = this._listenersForKey(key);
 
     for (let index = listeners.length - 1; index >= 0; --index) {
-      const [lContext, lListener, lOptions] = listeners[index];
+      let [lContext, lListener, lOptions] = listeners[index];
 
-      const sameContext  = lContext  === context;
-      const sameListener = lListener === listener;
-      const sameOptions  = optionsAreEqual(lOptions, options);
+      let sameContext  = lContext  === context;
+      let sameListener = lListener === listener;
+      let sameOptions  = optionsAreEqual(lOptions, options);
 
       if (sameContext && sameListener && sameOptions) {
         listeners.splice(index, 1);
@@ -89,7 +91,7 @@ export default Ember.Service.extend({
 
   _handleKeyPress(e) {
     let key = e.key || KEYCODE_TO_KEY_MAP[e.keyCode];
-    const listeners = this._listenersForKey(key);
+    let listeners = this._listenersForKey(key);
 
     if (key === '.') {
       key = 'dot';
@@ -105,13 +107,12 @@ export default Ember.Service.extend({
       if (options.requireCtrl && options.useCmdOnMac && isMacOs()) {
         if (!e.metaKey) { return; }
       } else {
-        if (e.ctrlKey  && !options.requireCtrl ) { return; }
-        if (e.metaKey  && !options.requireMeta ) { return; }
+        if (e.ctrlKey  && !options.requireCtrl) { return; }
+        if (e.metaKey  && !options.requireMeta) { return; }
       }
 
       if (e.altKey   && !options.requireAlt)   { return; }
       if (e.shiftKey && !options.requireShift) { return; }
-
 
       let fn = callback;
 
@@ -126,7 +127,7 @@ export default Ember.Service.extend({
       }
 
       // Push the event object onto arguments
-      const args = [e].concat(options.arguments || []);
+      let args = [e].concat(options.arguments || []);
 
       // Use run loop if debounce, throttle or scheduleOnce is specified
       // else call callback immediately
@@ -149,7 +150,7 @@ export default Ember.Service.extend({
   },
 
   init() {
-    const handler = (...args) => this._handleKeyPress(...args);
+    let handler = (...args) => this._handleKeyPress(...args);
     set(this, '_keyPressHandler', handler);
     $(() => $(document.body).on('keydown', handler));
 
@@ -157,7 +158,7 @@ export default Ember.Service.extend({
   },
 
   willDestroy() {
-    const handler = get(this, '_keyPressHandler');
+    let handler = get(this, '_keyPressHandler');
     $(() => $(document.body).off('keydown', handler));
 
     this._super(...arguments);

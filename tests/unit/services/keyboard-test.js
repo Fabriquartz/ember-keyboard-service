@@ -1,16 +1,14 @@
-import Ember from 'ember';
 import $ from 'jquery';
 import { moduleFor, test } from 'ember-qunit';
-
-const { run } = Ember;
+import run from 'ember-runloop';
 
 // Haven't found a reliable way of spoofing user agent on phantom js.
-var setUserAgent, resetUserAgent;
+let setUserAgent, resetUserAgent, service;
 if (!/PhantomJS/i.test(window.navigator.userAgent)) {
-  const originalNavigator = window.navigator.__lookupGetter__('userAgent');
+  let originalNavigator = window.navigator.__lookupGetter__('userAgent');
   setUserAgent = function setUserAgent(str) {
-    window.navigator.__defineGetter__('userAgent', function(){
-        return str;
+    window.navigator.__defineGetter__('userAgent', function() {
+      return str;
     });
   };
 
@@ -19,11 +17,22 @@ if (!/PhantomJS/i.test(window.navigator.userAgent)) {
   };
 }
 
-moduleFor('service:keyboard', 'Unit | Service | keyboard');
+moduleFor('service:keyboard', 'Unit | Service | keyboard', {
+  unit: true,
+
+  beforeEach() {
+    service = this.subject({
+      activities: [{ id: 1 }],
+
+      selectionService: {
+        setContent() { }
+      }
+    });
+  }
+});
 
 test('it listens for key down presses', function(assert) {
   assert.expect(3);
-  const service = this.subject();
 
   service.listenFor('f', this, function() { assert.ok(true); });
   service.listenFor('o', this, function() { assert.ok(true); });
@@ -36,9 +45,9 @@ test('it listens for key down presses', function(assert) {
 
 test('listener can be a function name', function(assert) {
   assert.expect(1);
-  const service = this.subject();
+  let service = this.subject();
 
-  const context = {
+  let context = {
     foo() { assert.ok(true); }
   };
 
@@ -48,9 +57,9 @@ test('listener can be a function name', function(assert) {
 });
 
 test('the first argument to the callback is the event object', function(assert) {
-  const service = this.subject();
+  let service = this.subject();
 
-  const event = { key: 'x' };
+  let event = { key: 'x' };
   service.listenFor('x', this, function(e) { assert.equal(e.key, event.key); });
 
   $(document.body).trigger($.Event('keydown', event));
@@ -58,7 +67,7 @@ test('the first argument to the callback is the event object', function(assert) 
 
 test('it can handle an array of static arguments as option', function(assert) {
   assert.expect(1);
-  const service = this.subject();
+  let service = this.subject();
 
   service.listenFor('x', this, function(e, n) { assert.equal(n, 42); }, {
     arguments: [42]
@@ -69,7 +78,7 @@ test('it can handle an array of static arguments as option', function(assert) {
 
 test('it throws when no key is given', function(assert) {
   assert.expect(1);
-  const service = this.subject();
+  let service = this.subject();
 
   assert.throws(() => {
     service.listenFor();
@@ -78,9 +87,12 @@ test('it throws when no key is given', function(assert) {
 
 test('it can handle ctrl modifier', function(assert) {
   assert.expect(1);
-  const service = this.subject();
+  let service = this.subject();
 
-  service.listenFor('x', this, function() { assert.ok(false, 'should not run with ctrl pressed'); });
+  service.listenFor('x', this, function() {
+    assert.ok(false, 'should not run with ctrl pressed');
+  });
+
   service.listenFor('x', this, function() { assert.ok(true); }, {
     requireCtrl: true
   });
@@ -90,9 +102,11 @@ test('it can handle ctrl modifier', function(assert) {
 
 test('it can handle alt key modifier', function(assert) {
   assert.expect(1);
-  const service = this.subject();
+  let service = this.subject();
 
-  service.listenFor('x', this, function() { assert.ok(false, 'should not run with alt pressed'); });
+  service.listenFor('x', this, function() {
+    assert.ok(false, 'should not run with alt pressed');
+  });
   service.listenFor('x', this, function() { assert.ok(true); }, {
     requireAlt: true
   });
@@ -102,9 +116,12 @@ test('it can handle alt key modifier', function(assert) {
 
 test('it can handle shift key modifier', function(assert) {
   assert.expect(1);
-  const service = this.subject();
+  let service = this.subject();
 
-  service.listenFor('x', this, function() { assert.ok(false, 'should not run with shift pressed'); });
+  service.listenFor('x', this, function() {
+    assert.ok(false, 'should not run with shift pressed');
+  });
+
   service.listenFor('x', this, function() { assert.ok(true); }, {
     requireShift: true
   });
@@ -114,9 +131,12 @@ test('it can handle shift key modifier', function(assert) {
 
 test('it can handle meta key modifier', function(assert) {
   assert.expect(1);
-  const service = this.subject();
+  let service = this.subject();
 
-  service.listenFor('x', this, function() { assert.ok(false, 'should not run with meta pressed'); });
+  service.listenFor('x', this, function() {
+    assert.ok(false, 'should not run with meta pressed');
+  });
+
   service.listenFor('x', this, function() { assert.ok(true); }, {
     requireMeta: true
   });
@@ -128,7 +148,7 @@ test('it can handle meta key modifier', function(assert) {
 if (!/PhantomJS/i.test(window.navigator.userAgent)) {
   test('it can handle meta as ctrl key modifier on Mac OS X when useCmdOnMac is enabled', function(assert) {
     setUserAgent('Mac OS X');
-    const service = this.subject();
+    let service = this.subject();
 
     let cmdTriggered  = 0;
     let ctrlTriggered = 0;
@@ -141,7 +161,6 @@ if (!/PhantomJS/i.test(window.navigator.userAgent)) {
     }, {
       useCmdOnMac: true
     });
-
 
     $(document.body).trigger($.Event('keydown', { key: 'x', ctrlKey: true }));
     assert.equal(ctrlTriggered, 1, 'ctrl hit on mac - ctrl count is 1');
@@ -165,25 +184,34 @@ if (!/PhantomJS/i.test(window.navigator.userAgent)) {
 
 test('it can handle a combination of key modifiers', function(assert) {
   assert.expect(1);
-  const service = this.subject();
+  let service = this.subject();
 
   service.listenFor('Del', this, function() { assert.ok(false, 'should not run'); });
-  service.listenFor('Del', this, function() { assert.ok(false, 'should not run'); }, {
+  service.listenFor('Del', this, function() {
+    assert.ok(false, 'should not run');
+  }, {
     requireAlt: true
   });
   service.listenFor('Del', this, function() { assert.ok(true); }, {
-    requireCtrl:  true,
-    requireAlt:   true
+    requireCtrl: true,
+    requireAlt:  true
   });
 
-  $(document.body).trigger($.Event('keydown', { key: 'Del', ctrlKey: true, altKey: true }));
+  $(document.body).trigger($.Event('keydown', {
+    key:     'Del',
+    ctrlKey: true,
+    altKey:  true
+  }));
 });
 
 test('it can handle a combination shorthand', function(assert) {
   assert.expect(1);
-  const service = this.subject();
+  let service = this.subject();
 
-  service.listenFor('x', this, function() { assert.ok(false, 'should not run with ctrl pressed'); });
+  service.listenFor('x', this, function() {
+    assert.ok(false, 'should not run with ctrl pressed');
+  });
+
   service.listenFor('ctrl+x', this, function() { assert.ok(true); });
 
   $(document.body).trigger($.Event('keydown', { key: 'x', ctrlKey: true }));
@@ -191,9 +219,9 @@ test('it can handle a combination shorthand', function(assert) {
 
 test('stopListeningFor removes the keyboard handler', function(assert) {
   assert.expect(3);
-  const service = this.subject();
+  let service = this.subject();
 
-  const listener = function() { assert.ok(true); };
+  let listener = function() { assert.ok(true); };
   service.listenFor('ctrl+x', this, listener);
   service.listenFor('ctrl+x', this, function() { assert.ok(true); });
 
@@ -206,7 +234,7 @@ test('stopListeningFor removes the keyboard handler', function(assert) {
 
 test('listenForOnce only gets called once', function(assert) {
   assert.expect(1);
-  const service = this.subject();
+  let service = this.subject();
 
   service.listenForOnce('x', this, function() { assert.ok(true); });
 
@@ -216,7 +244,7 @@ test('listenForOnce only gets called once', function(assert) {
 
 test('it falls back to event.keyCode if event.key is not set', function(assert) {
   assert.expect(1);
-  const service = this.subject();
+  let service = this.subject();
 
   service.listenFor('x', this, function() { assert.ok(true); });
 
@@ -225,7 +253,7 @@ test('it falls back to event.keyCode if event.key is not set', function(assert) 
 
 test('it can handle the space key', function(assert) {
   assert.expect(1);
-  const service = this.subject();
+  let service = this.subject();
 
   service.listenFor(' ', this, function() { assert.ok(true); });
 
@@ -234,7 +262,7 @@ test('it can handle the space key', function(assert) {
 
 test('multiple shortcuts can be specified at once', function(assert) {
   assert.expect(2);
-  const service = this.subject();
+  let service = this.subject();
 
   service.listenFor(['a', 'b'], this, function() { assert.ok(true); });
 
@@ -242,9 +270,10 @@ test('multiple shortcuts can be specified at once', function(assert) {
   $(document.body).trigger($.Event('keydown', { key: 'b' }));
 });
 
-test('multiple shortcuts can be specified at once - with modifiers', function(assert) {
+test('multiple shortcuts can be specified at once - with modifiers',
+function(assert) {
   assert.expect(2);
-  const service = this.subject();
+  let service = this.subject();
 
   service.listenFor(['ctrl+a', 'shift+b'], this, function() { assert.ok(true); });
 
@@ -255,9 +284,9 @@ test('multiple shortcuts can be specified at once - with modifiers', function(as
 
 test('stopListingFor also support multiple shortcuts', function(assert) {
   assert.expect(0);
-  const service = this.subject();
+  let service = this.subject();
 
-  const callback = function() { assert.ok(false); };
+  let callback = function() { assert.ok(false); };
   service.listenFor(['ctrl+a', 'shift+b'], this, callback);
   service.stopListeningFor(['ctrl+a', 'shift+b'], this, callback);
 
@@ -267,12 +296,12 @@ test('stopListingFor also support multiple shortcuts', function(assert) {
 
 test('if event.target is an input ignore by default', function(assert) {
   assert.expect(0);
-  const service = this.subject();
+  let service = this.subject();
 
   service.listenFor('x', this, function() { assert.ok(true); });
 
-  const input    = document.createElement('input');
-  const textarea = document.createElement('textarea');
+  let input    = document.createElement('input');
+  let textarea = document.createElement('textarea');
 
   $(document.body).trigger($.Event('keydown', { key: 'x', target: input }));
   $(document.body).trigger($.Event('keydown', { key: 'x', target: textarea }));
@@ -280,39 +309,41 @@ test('if event.target is an input ignore by default', function(assert) {
 
 test('if event.target is an input handle if option is set', function(assert) {
   assert.expect(2);
-  const service = this.subject();
+  let service = this.subject();
 
   service.listenFor('x', this, function() { assert.ok(true); }, {
     actOnInputElement: true
   });
 
-  const input    = document.createElement('input');
-  const textarea = document.createElement('textarea');
+  let input    = document.createElement('input');
+  let textarea = document.createElement('textarea');
 
   $(document.body).trigger($.Event('keydown', { key: 'x', target: input }));
   $(document.body).trigger($.Event('keydown', { key: 'x', target: textarea }));
 });
 
-test('options.debounce wraps callback in run.debounce with specified time', function(assert) {
+test('options.debounce wraps callback in run.debounce with specified time',
+function(assert) {
   assert.expect(1);
-  const done = assert.async();
-  const service = this.subject();
+  let done = assert.async();
+  let service = this.subject();
 
   service.listenFor('x', this, function() { assert.ok(true); done(); }, {
-    debounce: 1,
+    debounce: 1
   });
 
   $(document.body).trigger($.Event('keydown', { key: 'x' }));
   $(document.body).trigger($.Event('keydown', { key: 'x' }));
 });
 
-test('options.throttle wraps callback in run.throttle with specified time', function(assert) {
+test('options.throttle wraps callback in run.throttle with specified time',
+function(assert) {
   assert.expect(2);
-  const done = assert.async();
-  const service = this.subject();
+  let done = assert.async();
+  let service = this.subject();
 
   service.listenFor('x', this, function() { assert.ok(true); }, {
-    throttle: 1,
+    throttle: 1
   });
 
   $(document.body).trigger($.Event('keydown', { key: 'x' }));
@@ -326,10 +357,10 @@ test('options.throttle wraps callback in run.throttle with specified time', func
 
 test('options.scheduleOnce wraps callback in run.once', function(assert) {
   assert.expect(1);
-  const service = this.subject();
+  let service = this.subject();
 
   service.listenFor('x', this, function() { assert.ok(true); }, {
-    scheduleOnce: true,
+    scheduleOnce: true
   });
 
   run(() => {
@@ -343,7 +374,7 @@ test('options.scheduleOnce wraps callback in run.once', function(assert) {
 
 test('listening for "." works', function(assert) {
   assert.expect(1);
-  const service = this.subject();
+  let service = this.subject();
 
   service.listenFor('.', this, function() { assert.ok(true); });
 

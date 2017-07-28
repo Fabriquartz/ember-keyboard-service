@@ -1,17 +1,17 @@
-import Ember from 'ember';
-import KeyboardService from 'ember-keyboard-service/services/keyboard';
-import KeyboardMixin from 'ember-keyboard-service/mixins/keyboard';
-import { module, test } from 'qunit';
+import KeyboardService  from 'ember-keyboard-service/services/keyboard';
+import KeyboardMixin    from 'ember-keyboard-service/mixins/keyboard';
+import { moduleForComponent, test } from 'ember-qunit';
+import Object           from 'ember-object';
+import $                from 'jquery';
+import run              from 'ember-runloop';
 
-const { run } = Ember;
-
-module('Unit | Mixin | keyboard');
+moduleForComponent('Unit | Mixin | keyboard', { integration: true });
 
 // Replace this with your real tests.
 test('I can declare keyboard handlers', function(assert) {
   assert.expect(1);
 
-  var KeyboardObject = Ember.Object.extend(KeyboardMixin, {
+  let KeyboardObject = Object.extend(KeyboardMixin, {
     keyboard: KeyboardService.create(),
 
     handler() { assert.ok(true); },
@@ -28,8 +28,8 @@ test('I can declare keyboard handlers', function(assert) {
 test('I can declare no keyboard handlers', function(assert) {
   assert.expect(0);
 
-  var KeyboardObject = Ember.Object.extend(KeyboardMixin, {
-    keyboard: KeyboardService.create(),
+  let KeyboardObject = Object.extend(KeyboardMixin, {
+    keyboard: KeyboardService.create()
   });
 
   KeyboardObject.create();
@@ -38,9 +38,8 @@ test('I can declare no keyboard handlers', function(assert) {
 test('I can declare keyboard handlers with static arguments', function(assert) {
   assert.expect(1);
 
-  var KeyboardObject = Ember.Object.extend(KeyboardMixin, {
-    keyboard: KeyboardService.create(),
-
+  let KeyboardObject = Object.extend(KeyboardMixin, {
+    keyboard:         KeyboardService.create(),
     handler(e, arg) { assert.equal(arg, 'foo'); },
     keyboardHandlers: [
       { key: 'x', handler: 'handler', arguments: ['foo'] }
@@ -55,7 +54,7 @@ test('I can declare keyboard handlers with static arguments', function(assert) {
 test('It fires on multiple instances', function(assert) {
   assert.expect(2);
 
-  var KeyboardObject = Ember.Object.extend(KeyboardMixin, {
+  let KeyboardObject = Object.extend(KeyboardMixin, {
     keyboard: KeyboardService.create(),
 
     handler() { assert.ok(true); },
@@ -71,14 +70,14 @@ test('It fires on multiple instances', function(assert) {
 });
 
 test('Handler must exist', function(assert) {
-  var KeyboardObject = Ember.Object.extend(KeyboardMixin, {
-    keyboard: KeyboardService.create(),
+  let KeyboardObject = Object.extend(KeyboardMixin, {
+    keyboard:         KeyboardService.create(),
     keyboardHandlers: [
       { key: 'x', handler: 'handler' }
     ]
   });
 
-  var subject = KeyboardObject.create();
+  let subject = KeyboardObject.create();
 
   assert.throws(() =>  {
     $(document.body).trigger($.Event('keydown', { key: 'x' }));
@@ -91,7 +90,7 @@ test('Handler must exist', function(assert) {
 test('I can declare keyboard handlers with options', function(assert) {
   assert.expect(1);
 
-  var KeyboardObject = Ember.Object.extend(KeyboardMixin, {
+  let KeyboardObject = Object.extend(KeyboardMixin, {
     keyboard: KeyboardService.create(),
 
     handler() { assert.ok(true); },
@@ -109,7 +108,7 @@ test('I can declare keyboard handlers with options', function(assert) {
 test('keyboardHandlers is a concatenated property', function(assert) {
   assert.expect(2);
 
-  var KeyboardObject = Ember.Object.extend(KeyboardMixin, {
+  let KeyboardObject = Object.extend(KeyboardMixin, {
     keyboard: KeyboardService.create(),
 
     handler() { assert.ok(true); },
@@ -118,7 +117,7 @@ test('keyboardHandlers is a concatenated property', function(assert) {
     ]
   });
 
-  var ExtendedKeyboardObject = KeyboardObject.extend({
+  let ExtendedKeyboardObject = KeyboardObject.extend({
     keyboardHandlers: [
       { key: 'x', handler: 'handler' }
     ]
